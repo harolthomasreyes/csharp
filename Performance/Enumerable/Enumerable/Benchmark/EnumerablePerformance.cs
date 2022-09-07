@@ -7,6 +7,20 @@ namespace Enumerable.Benchmark
     [MemoryDiagnoser(false)]
     public class EnumerablePerformance
     {
+        private string[] registers { get; set; }
+      
+
+        [GlobalSetup]
+        public void Setup()
+        {
+            registers = File.ReadAllLines("./Registers.csv");
+        }
+
+        [Benchmark]
+        public async Task ReadFileAsyncForeach()
+        {
+            var register = await ReadFile_Async_Foreach();
+        }
         [Benchmark]
         public async Task ReadFileNotAsyncForeach()
         {
@@ -26,9 +40,8 @@ namespace Enumerable.Benchmark
 
         private IEnumerable<FileRegister> ReadFile_NotAsync_Select()
         {
-            var lines = File.ReadAllLines("./Registers.csv");
-
-            return lines.Select(x =>
+            
+            return registers.Select(x =>
             {
                 var line = x.Split(',');
                 return new FileRegister(line[0], int.Parse(line[1]));
@@ -36,9 +49,8 @@ namespace Enumerable.Benchmark
         }
         private async Task<IEnumerable<FileRegister>> ReadFile_Async_Select()
         {
-            var lines = File.ReadAllLines("./Registers.csv");
-
-            return lines.Select(x =>
+            
+            return registers.Select(x =>
             {
                 var line = x.Split(',');
                 return new FileRegister(line[0], int.Parse(line[1]));
@@ -46,14 +58,22 @@ namespace Enumerable.Benchmark
         }
         private IEnumerable<FileRegister> ReadFile_NotAsync_Foreach()
         {
-            var lines = File.ReadAllLines("./Registers.csv");
-
-            foreach(var x in lines)
+           
+            foreach(var x in registers)
             {
                 var line = x.Split(',');
                 yield return new FileRegister(line[0], int.Parse(line[1]));
             }
         }
-      
+        private async Task<IEnumerable<FileRegister>> ReadFile_Async_Foreach()
+        {
+            var ret = new List<FileRegister>();
+            foreach (var x in registers)
+            {
+                var line = x.Split(',');
+                ret.Add( new FileRegister(line[0], int.Parse(line[1])));
+            }
+            return ret;
+        }
     }
 }
