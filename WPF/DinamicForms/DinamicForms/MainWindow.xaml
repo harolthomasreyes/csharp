@@ -1,0 +1,22 @@
+﻿<Window x:Class="DinamicForms.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DinamicForms"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <DockPanel>
+        <!-- Panel izquierdo: paleta de componentes -->
+        <StackPanel DockPanel.Dock="Left" Width="150" Background="#EEE" >
+            <TextBlock Text="Paleta" FontWeight="Bold" Margin="0,0,0,10"/>
+            <Button Content="Agregar TextBox" Click="AgregarTextBox_Click" Margin="0,5"/>
+            <Button Content="Agregar CheckBox" Click="AgregarCheckBox_Click" Margin="0,5"/>
+            <Button Content="Agregar Combo" Click="AgregarCombo_Click" Margin="0,5"/>
+            <Button Content="Exportar JSON" Click="ExportarJson_Click" Margin="0,20,0,0"/>
+        </StackPanel>
+
+        <!-- Lienzo central -->
+        <Canvas x:Name="DesignCanvas" Background="White"/>
+    </DockPanel>
+</Window>

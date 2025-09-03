@@ -1,0 +1,268 @@
+﻿<Window x:Class="MyPdfEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MyPdfEditor"
+        mc:Ignorable="d"
+        Title="My PDF Editor" 
+        Height="800" 
+        Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded"
+        Closing="Window_Closing">
+
+    <Window.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <converters:ZoomConverter x:Key="ZoomConverter" />
+        <converters:PointsToPixelsConverter x:Key="PointsToPixelsConverter" />
+
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="MinWidth" Value="75" />
+        </Style>
+    </Window.Resources>
+
+    <DockPanel>
+        <!-- Main Menu -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New" Command="{Binding NewDocumentCommand}" />
+                <MenuItem Header="_Open" Command="{Binding OpenDocumentCommand}" Click="OpenDocumentMenuItem_Click"/>
+                <Separator />
+                <MenuItem Header="_Save" Command="{Binding SaveDocumentCommand}" />
+                <MenuItem Header="Save _As" Command="{Binding SaveAsCommand}" Click="SaveAsMenuItem_Click"/>
+                <Separator />
+                <MenuItem Header="Security _Settings..." Click="SecuritySettingsMenuItem_Click"
+                         IsEnabled="{Binding IsDocumentOpen}"/>
+                <MenuItem Header="_Export..." Click="ExportMenuItem_Click"
+                         IsEnabled="{Binding IsDocumentOpen}"/>
+                <Separator />
+                <MenuItem Header="_Close" Command="{Binding CloseDocumentCommand}" />
+                <Separator />
+                <MenuItem Header="E_xit" Click="ExitMenuItem_Click"/>
+            </MenuItem>
+
+            <MenuItem Header="_Edit" >
+                <!--DropDownOpened="ToolsMenu_DropDownOpened"-->
+                <MenuItem Header="_Undo" Command="{Binding UndoCommand}" />
+                <MenuItem Header="_Redo" Command="{Binding RedoCommand}" />
+                <Separator />
+                <MenuItem Header="Cu_t" Click="CutMenuItem_Click"/>
+                <MenuItem Header="_Copy" Click="CopyMenuItem_Click"/>
+                <MenuItem Header="_Paste" Click="PasteMenuItem_Click"/>
+                <MenuItem Header="_Delete" Click="DeleteMenuItem_Click"/>
+            </MenuItem>
+
+            <MenuItem Header="_View">
+                <!--DropDownOpened="ViewMenu_DropDownOpened"-->
+                <MenuItem Header="Zoom _In" Command="{Binding ZoomInCommand}" />
+                <MenuItem Header="Zoom _Out" Command="{Binding ZoomOutCommand}" />
+                <Separator />
+                <MenuItem Header="Fit to _Width" Command="{Binding FitToWidthCommand}" />
+                <MenuItem Header="Fit to _Height" Command="{Binding FitToHeightCommand}" />
+                <MenuItem Header="_Actual Size" Command="{Binding ActualSizeCommand}" />
+                <Separator />
+                <MenuItem Header="Show _Grid" IsCheckable="True" IsChecked="{Binding ShowGrid}"/>
+                <MenuItem Header="Show _Rulers" IsCheckable="True" IsChecked="{Binding ShowRulers}"/>
+            </MenuItem>
+
+            <MenuItem Header="_Tools" ><!--DropDownOpened="ToolsMenu_DropDownOpened">-->
+                <MenuItem Header="Add _Text Field" Click="AddTextFieldMenuItem_Click"
+                         IsEnabled="{Binding IsDocumentOpen}"/>
+                <MenuItem Header="Add _Checkbox" Click="AddCheckboxMenuItem_Click"
+                         IsEnabled="{Binding IsDocumentOpen}"/>
+                <MenuItem Header="Add _Radio Button" Click="AddRadioButtonMenuItem_Click"
+                         IsEnabled="{Binding IsDocumentOpen}"/>
+                <MenuItem Header="Add _Combo Box" Click="AddComboBoxMenuItem_Click"
+                         IsEnabled="{Binding IsDocumentOpen}"/>
+                <MenuItem Header="Add _List Box" Click="AddListBoxMenuItem_Click"
+                         IsEnabled="{Binding IsDocumentOpen}"/>
+                <MenuItem Header="Add _Button" Click="AddButtonMenuItem_Click"
+                         IsEnabled="{Binding IsDocumentOpen}"/>
+            </MenuItem>
+
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About" Click="AboutMenuItem_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Toolbar -->
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>
+                <Button Command="{Binding NewDocumentCommand}" ToolTip="Create new document">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Resources/Images/NewDocument.png" Width="16" Height="16"/>
+                        <TextBlock Text="New" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding OpenDocumentCommand}" ToolTip="Open document" Click="OpenDocumentMenuItem_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Resources/Images/OpenDocument.png" Width="16" Height="16"/>
+                        <TextBlock Text="Open" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding SaveDocumentCommand}" ToolTip="Save document">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Resources/Images/SaveDocument.png" Width="16" Height="16"/>
+                        <TextBlock Text="Save" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </Button>
+                <Separator />
+                <Button Command="{Binding UndoCommand}" ToolTip="Undo last action">
+                    <Image Source="/Resources/Images/Undo.png" Width="16" Height="16"/>
+                </Button>
+                <Button Command="{Binding RedoCommand}" ToolTip="Redo last action">
+                    <Image Source="/Resources/Images/Redo.png" Width="16" Height="16"/>
+                </Button>
+                <Separator />
+
+                <!-- Zoom Controls -->
+                <ComboBox Width="80" SelectedValue="{Binding ZoomLevel}" ToolTip="Zoom level">
+                    <ComboBoxItem Content="25%"/>
+                    <ComboBoxItem Content="50%"/>
+                    <ComboBoxItem Content="75%"/>
+                    <ComboBoxItem Content="100%"/>
+                    <ComboBoxItem Content="150%"/>
+                    <ComboBoxItem Content="200%"/>
+                    <ComboBoxItem Content="400%"/>
+                </ComboBox>
+
+                <Button Command="{Binding ZoomInCommand}" ToolTip="Zoom In">
+                    <Image Source="/Resources/Images/ZoomIn.png" Width="16" Height="16"/>
+                </Button>
+                <Button Command="{Binding ZoomOutCommand}" ToolTip="Zoom Out">
+                    <Image Source="/Resources/Images/ZoomOut.png" Width="16" Height="16"/>
+                </Button>
+            </ToolBar>
+
+            <ToolBar>
+                <!-- Field Tools -->
+                <Button Click="AddTextFieldMenuItem_Click" ToolTip="Add text field" IsEnabled="{Binding IsDocumentOpen}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Resources/Images/TextField.png" Width="16" Height="16"/>
+                        <TextBlock Text="Text" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </Button>
+                <Button Click="AddCheckboxMenuItem_Click" ToolTip="Add checkbox" IsEnabled="{Binding IsDocumentOpen}">
+                    <Image Source="/Resources/Images/Checkbox.png" Width="16" Height="16"/>
+                </Button>
+                <Button Click="AddRadioButtonMenuItem_Click" ToolTip="Add radio button" IsEnabled="{Binding IsDocumentOpen}">
+                    <Image Source="/Resources/Images/RadioButton.png" Width="16" Height="16"/>
+                </Button>
+                <Button Click="AddComboBoxMenuItem_Click" ToolTip="Add combo box" IsEnabled="{Binding IsDocumentOpen}">
+                    <Image Source="/Resources/Images/ComboBox.png" Width="16" Height="16"/>
+                </Button>
+                <Button Click="AddListBoxMenuItem_Click" ToolTip="Add list box" IsEnabled="{Binding IsDocumentOpen}">
+                    <Image Source="/Resources/Images/ListBox.png" Width="16" Height="16"/>
+                </Button>
+                <Button Click="AddButtonMenuItem_Click" ToolTip="Add button" IsEnabled="{Binding IsDocumentOpen}">
+                    <Image Source="/Resources/Images/Button.png" Width="16" Height="16"/>
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+
+        <!-- Status Bar -->
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock Text="{Binding StatusMessage}" />
+            </StatusBarItem>
+            <!--<StatusBarItem>
+                <TextBlock Text="Page: " />
+                <TextBlock Text="{Binding DocumentViewModel.CurrentPageNumber}" />
+                <TextBlock Text=" of " />
+                <TextBlock Text="{Binding DocumentViewModel.Pages.Count}" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="Zoom: " />
+                <TextBlock Text="{Binding ZoomLevel}" />
+                <TextBlock Text="%" />
+            </StatusBarItem>-->
+            <StatusBarItem>
+                <TextBlock Text="Modified" 
+                          Visibility="{Binding CurrentDocument.IsModified, Converter={StaticResource BooleanToVisibilityConverter}}"
+                          Foreground="Red" FontWeight="Bold"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <ProgressBar Width="100" Height="16" 
+                           IsIndeterminate="{Binding IsBusy}" 
+                           Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </StatusBarItem>
+        </StatusBar>
+
+        <!-- Main Content Area -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" MinWidth="150"/>
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="300" MinWidth="250"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Panel - Pages Thumbnails -->
+            <GroupBox Grid.Column="0" Header="Pages" 
+                     Visibility="{Binding IsDocumentOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <ListBox ItemsSource="{Binding DocumentViewModel.Pages}"
+                        SelectedItem="{Binding DocumentViewModel.CurrentPage}"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="2" Padding="5" BorderBrush="LightGray" BorderThickness="1" CornerRadius="3">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Page " />
+                                    <TextBlock Text="{Binding PageNumber}" FontWeight="Bold" />
+                                    <TextBlock Text=" - " />
+                                    <TextBlock Text="{Binding Width, Converter={StaticResource PointsToPixelsConverter}, StringFormat={}{0:F0}px}" />
+                                    <TextBlock Text=" x " />
+                                    <TextBlock Text="{Binding Height, Converter={StaticResource PointsToPixelsConverter}, StringFormat={}{0:F0}px}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </GroupBox>
+
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="LightGray" />
+
+            <!-- Center Panel - Document View -->
+            <Grid Grid.Column="2">
+                <ScrollViewer x:Name="MainScrollViewer" 
+                            HorizontalScrollBarVisibility="Auto"
+                            VerticalScrollBarVisibility="Auto"
+                            PreviewMouseWheel="MainScrollViewer_PreviewMouseWheel"
+                            ScrollChanged="MainScrollViewer_ScrollChanged"
+                            Visibility="{Binding IsDocumentOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+
+                    <Border Background="White" BorderBrush="LightGray" BorderThickness="1" Padding="20" CornerRadius="2">
+                        <ContentControl Content="{Binding DocumentViewModel}" />
+                    </Border>
+                </ScrollViewer>
+
+                <!-- Welcome Screen -->
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Visibility="{Binding IsDocumentOpen, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}">
+                    <TextBlock Text="My PDF Editor" FontSize="24" FontWeight="Bold" 
+                              HorizontalAlignment="Center" Margin="0,0,0,20" Foreground="#FF0078D7"/>
+                    <Button Content="Create New Document" Command="{Binding NewDocumentCommand}"
+                           Padding="20,10" FontSize="14" HorizontalAlignment="Center" 
+                           Background="#FF0078D7" Foreground="White"/>
+                    <TextBlock Text="or" HorizontalAlignment="Center" Margin="0,10" Foreground="Gray"/>
+                    <Button Content="Open Existing Document" Command="{Binding OpenDocumentCommand}"
+                           Padding="20,10" FontSize="14" HorizontalAlignment="Center"
+                           Background="#FF505050" Foreground="White"/>
+                </StackPanel>
+            </Grid>
+
+            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" Background="LightGray" />
+
+            <!-- Right Panel - Properties -->
+            <GroupBox Grid.Column="4" Header="Properties"
+                     Visibility="{Binding IsDocumentOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <ContentControl Content="{Binding DocumentViewModel.PropertiesPanel}" />
+            </GroupBox>
+        </Grid>
+    </DockPanel>
+</Window>

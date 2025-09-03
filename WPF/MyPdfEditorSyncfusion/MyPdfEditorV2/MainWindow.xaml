@@ -1,0 +1,27 @@
+﻿<Window x:Class="MyPdfEditorV2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:syncfusion="clr-namespace:Syncfusion.Windows.PdfViewer;assembly=Syncfusion.PdfViewer.WPF"
+        Title="PDF Document Management" Height="600" Width="900">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <!-- PDF Actions Panel -->
+        <StackPanel Grid.Column="0" VerticalAlignment="Top">
+            <TextBlock Text="PDF Management" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+            <Button Content="Create New PDF" Name="BtnCreatePdf" Height="32" Margin="0,0,0,4" Click="BtnCreatePdf_Click"/>
+            <Button Content="Load PDF" Name="BtnLoadPdf" Height="32" Margin="0,0,0,4" Click="BtnLoadPdf_Click"/>
+            <Button Content="Save PDF" Name="BtnSavePdf" Height="32" Margin="0,0,0,4" Click="BtnSavePdf_Click"/>
+            <Button Content="Import PDF (Bytes)" Name="BtnImportPdf" Height="32" Margin="0,0,0,4" Click="BtnImportPdf_Click"/>
+            <Button Content="Export PDF (Bytes)" Name="BtnExportPdf" Height="32" Margin="0,0,0,4" Click="BtnExportPdf_Click"/>
+            <Button Content="Validate Structure" Name="BtnValidatePdf" Height="32" Margin="0,0,0,4" Click="BtnValidatePdf_Click"/>
+            <Button Content="Merge PDFs" Name="BtnMergePdf" Height="32" Margin="0,0,0,4" Click="BtnMergePdf_Click"/>
+            <Button Content="Split PDF by Pages" Name="BtnSplitPdf" Height="32" Margin="0,0,0,4" Click="BtnSplitPdf_Click"/>
+        </StackPanel>
+        <!-- PDF Display and Edit Area -->
+        <Border Grid.Column="1" Background="#FFF" CornerRadius="6" Padding="12" Margin="10,0,0,0">
+            <syncfusion:PdfViewerControl x:Name="PdfViewerControl" />
+        </Border>
+    </Grid>
+</Window>

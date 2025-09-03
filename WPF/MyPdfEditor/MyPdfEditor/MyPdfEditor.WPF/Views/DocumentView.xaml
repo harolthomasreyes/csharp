@@ -1,0 +1,210 @@
+﻿<UserControl x:Class="MyPdfEditor.MyPdfEditor.WPF.Views.DocumentView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:MyPdfEditor.WPF.Views"
+             xmlns:vm="clr-namespace:MyPdfEditor.WPF.ViewModels"
+             xmlns:behaviors="clr-namespace:MyPdfEditor.WPF.Behaviors"
+             xmlns:converters="clr-namespace:MyPdfEditor.WPF.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+
+        <UserControl.Resources>
+            <converters:PointsToPixelsConverter x:Key="PointsToPixelsConverter" />
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+            <!-- Text Field Template -->
+            <DataTemplate DataType="{x:Type vm:TextFieldViewModel}">
+                <Border BorderBrush="{Binding BorderColor, Converter={StaticResource ColorToBrushConverter}}"
+                    BorderThickness="{Binding BorderWidth}"
+                    Background="{Binding BackgroundColor, Converter={StaticResource ColorToBrushConverter}}"
+                    CornerRadius="2"
+                    behaviors:SelectionBehavior.IsSelectable="True"
+                    behaviors:SelectionBehavior.SelectCommand="{Binding DataContext.SelectFieldCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    behaviors:SelectionBehavior.IsSelected="{Binding IsSelected}">
+
+                    <behaviors:DragDropBehavior.IsDraggable="True"
+                            behaviors:DragDropBehavior.DragCommand="{Binding DataContext.StartDragCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            behaviors:DragDropBehavior.DropCommand="{Binding DataContext.EndDragCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+
+                        <behaviors:ResizeBehavior.IsResizable="True"
+                                behaviors:ResizeBehavior.ResizeCommand="{Binding DataContext.ResizeFieldCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+
+                            <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+                                 FontFamily="{Binding FontFamily}"
+                                 FontSize="{Binding FontSize}"
+                                 Foreground="{Binding FontColor, Converter={StaticResource ColorToBrushConverter}}"
+                                 TextAlignment="{Binding Alignment}"
+                                 AcceptsReturn="{Binding IsMultiline}"
+                                 MaxLength="{Binding MaxLength}"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 Padding="2"
+                                 IsReadOnly="{Binding IsReadOnly}"
+                                 ToolTip="{Binding ToolTip}" />
+                            </behaviors:ResizeBehavior>
+                            </behaviors:DragDropBehavior>
+                </Border>
+            </DataTemplate>
+
+            <!-- Checkbox Field Template -->
+            <DataTemplate DataType="{x:Type vm:CheckboxFieldViewModel}">
+                <Border BorderBrush="{Binding BorderColor, Converter={StaticResource ColorToBrushConverter}}"
+                    BorderThickness="{Binding BorderWidth}"
+                    Background="{Binding BackgroundColor, Converter={StaticResource ColorToBrushConverter}}"
+                    CornerRadius="2"
+                    behaviors:SelectionBehavior.IsSelectable="True"
+                    behaviors:SelectionBehavior.SelectCommand="{Binding DataContext.SelectFieldCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    behaviors:SelectionBehavior.IsSelected="{Binding IsSelected}">
+
+                    <behaviors:DragDropBehavior.IsDraggable="True"
+                            behaviors:DragDropBehavior.DragCommand="{Binding DataContext.StartDragCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            behaviors:DragDropBehavior.DropCommand="{Binding DataContext.EndDragCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+
+                        <behaviors:ResizeBehavior.IsResizable="True"
+                                behaviors:ResizeBehavior.ResizeCommand="{Binding DataContext.ResizeFieldCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+
+                            <CheckBox IsChecked="{Binding IsChecked}"
+                                  Content="{Binding CheckedSymbol}"
+                                  Foreground="{Binding CheckMarkColor, Converter={StaticResource ColorToBrushConverter}}"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseBooleanConverter}}"
+                                  ToolTip="{Binding ToolTip}" />
+                            </behaviors:ResizeBehavior>
+                            </behaviors:DragDropBehavior>
+                </Border>
+            </DataTemplate>
+
+            <!-- Radio Button Field Template -->
+            <DataTemplate DataType="{x:Type vm:RadioButtonFieldViewModel}">
+                <Border BorderBrush="{Binding BorderColor, Converter={StaticResource ColorToBrushConverter}}"
+                    BorderThickness="{Binding BorderWidth}"
+                    Background="{Binding BackgroundColor, Converter={StaticResource ColorToBrushConverter}}"
+                    CornerRadius="2"
+                    behaviors:SelectionBehavior.IsSelectable="True"
+                    behaviors:SelectionBehavior.SelectCommand="{Binding DataContext.SelectFieldCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    behaviors:SelectionBehavior.IsSelected="{Binding IsSelected}">
+
+                    <behaviors:DragDropBehavior.IsDraggable="True"
+                            behaviors:DragDropBehavior.DragCommand="{Binding DataContext.StartDragCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            behaviors:DragDropBehavior.DropCommand="{Binding DataContext.EndDragCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+
+                        <behaviors:ResizeBehavior.IsResizable="True"
+                                behaviors:ResizeBehavior.ResizeCommand="{Binding DataContext.ResizeFieldCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+
+                            <RadioButton IsChecked="{Binding IsSelected}"
+                                     Content="{Binding SelectedSymbol}"
+                                     Foreground="{Binding SelectionColor, Converter={StaticResource ColorToBrushConverter}}"
+                                     GroupName="{Binding GroupName}"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseBooleanConverter}}"
+                                     ToolTip="{Binding ToolTip}" />
+                            </behaviors:ResizeBehavior>
+                            </behaviors:DragDropBehavior>
+                </Border>
+            </DataTemplate>
+
+            <!-- Selection Adorner Template -->
+            <ControlTemplate x:Key="SelectionAdornerTemplate" TargetType="Control">
+                <Border BorderBrush="#FF0078D7" BorderThickness="2" CornerRadius="2">
+                    <Border.Background>
+                        <SolidColorBrush Color="#100078D7" />
+                    </Border.Background>
+
+                    <!-- Resize Handles -->
+                    <Canvas>
+                        <Rectangle Width="8" Height="8" Fill="#FF0078D7" Canvas.Left="0" Canvas.Top="0" Cursor="SizeNWSE" />
+                        <Rectangle Width="8" Height="8" Fill="#FF0078D7" Canvas.Left="0" Canvas.Top="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource PointsToPixelsConverter}, ConverterParameter=Half}" Cursor="SizeWE" />
+                        <Rectangle Width="8" Height="8" Fill="#FF0078D7" Canvas.Left="0" Canvas.Top="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource PointsToPixelsConverter}}" Cursor="SizeNESW" />
+
+                        <Rectangle Width="8" Height="8" Fill="#FF0078D7" Canvas.Left="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource PointsToPixelsConverter}, ConverterParameter=Half}" Canvas.Top="0" Cursor="SizeNS" />
+                        <Rectangle Width="8" Height="8" Fill="#FF0078D7" Canvas.Left="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource PointsToPixelsConverter}, ConverterParameter=Half}" Canvas.Top="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource PointsToPixelsConverter}}" Cursor="SizeNS" />
+
+                        <Rectangle Width="8" Height="8" Fill="#FF0078D7" Canvas.Left="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource PointsToPixelsConverter}}" Canvas.Top="0" Cursor="SizeNESW" />
+                        <Rectangle Width="8" Height="8" Fill="#FF0078D7" Canvas.Left="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource PointsToPixelsConverter}}" Canvas.Top="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource PointsToPixelsConverter}, ConverterParameter=Half}" Cursor="SizeWE" />
+                        <Rectangle Width="8" Height="8" Fill="#FF0078D7" Canvas.Left="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource PointsToPixelsConverter}}" Canvas.Top="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource PointsToPixelsConverter}}" Cursor="SizeNWSE" />
+                    </Canvas>
+                </Border>
+            </ControlTemplate>
+        </UserControl.Resources>
+
+        <Grid>
+            <!-- Canvas for PDF Page -->
+            <Canvas x:Name="Canvas" Background="White">
+                <Canvas.LayoutTransform>
+                    <ScaleTransform ScaleX="{Binding ZoomLevel, Converter={StaticResource ZoomConverter}}"
+                               ScaleY="{Binding ZoomLevel, Converter={StaticResource ZoomConverter}}" />
+                </Canvas.LayoutTransform>
+
+                <!-- Page Background -->
+                <Border Width="{Binding CurrentPage.Width, Converter={StaticResource PointsToPixelsConverter}}"
+                   Height="{Binding CurrentPage.Height, Converter={StaticResource PointsToPixelsConverter}}"
+                   Background="White"
+                   BorderBrush="LightGray"
+                   BorderThickness="1">
+
+                    <!-- Page Content -->
+                    <ItemsControl ItemsSource="{Binding CurrentPage.Fields}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Left" Value="{Binding X, Converter={StaticResource PointsToPixelsConverter}}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Y, Converter={StaticResource PointsToPixelsConverter}}" />
+                                <Setter Property="Width" Value="{Binding Width, Converter={StaticResource PointsToPixelsConverter}}" />
+                                <Setter Property="Height" Value="{Binding Height, Converter={StaticResource PointsToPixelsConverter}}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                    </ItemsControl>
+                </Border>
+
+                <!-- Selection Adorner Layer -->
+                <Canvas x:Name="AdornerLayer" IsHitTestVisible="False">
+                    <ContentControl x:Name="SelectionAdorner"
+                               Template="{StaticResource SelectionAdornerTemplate}"
+                               Visibility="{Binding SelectedField, Converter={StaticResource BooleanToVisibilityConverter}}"
+                               Width="{Binding SelectedField.Width, Converter={StaticResource PointsToPixelsConverter}}"
+                               Height="{Binding SelectedField.Height, Converter={StaticResource PointsToPixelsConverter}}"
+                               Canvas.Left="{Binding SelectedField.X, Converter={StaticResource PointsToPixelsConverter}}"
+                               Canvas.Top="{Binding SelectedField.Y, Converter={StaticResource PointsToPixelsConverter}}" />
+                </Canvas>
+            </Canvas>
+
+            <!-- Grid Overlay for Snapping -->
+            <Canvas x:Name="GridOverlay" IsHitTestVisible="False"
+               Visibility="{Binding ShowGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Rectangle Fill="Transparent" Stroke="LightGray" StrokeThickness="0.5"
+                      Width="{Binding CurrentPage.Width, Converter={StaticResource PointsToPixelsConverter}}"
+                      Height="{Binding CurrentPage.Height, Converter={StaticResource PointsToPixelsConverter}}" />
+
+                <!-- Grid Lines -->
+                <ItemsControl ItemsSource="{Binding GridLines}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </Canvas>
+
+            <!-- Zoom Level Indicator -->
+            <Border Background="#CC000000" CornerRadius="5" Padding="10,5"
+               HorizontalAlignment="Right" VerticalAlignment="Top"
+               Margin="10" Visibility="{Binding IsZooming, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="{Binding ZoomLevel, StringFormat={}Zoom: {0}%}" 
+                      Foreground="White" FontWeight="Bold" />
+            </Border>
+
+            <!-- No Page Message -->
+            <TextBlock Text="No page selected" HorizontalAlignment="Center" VerticalAlignment="Center"
+                  FontSize="16" Foreground="Gray"
+                  Visibility="{Binding CurrentPage, Converter={StaticResource NullToVisibilityConverter}}" />
+        </Grid>
+    </UserControl>

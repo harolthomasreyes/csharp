@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MAUI_Dynamic_form.MainPage">
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          ColumnDefinitions="*"
+          Padding="10"
+          RowSpacing="10">
+
+        <!-- JSON Input Area -->
+        <Frame Grid.Row="0" 
+               BorderColor="LightGray" BackgroundColor="Black"
+               CornerRadius="10"
+               Padding="10">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Enter JSON form definition:" 
+                       FontSize="16" 
+                       FontAttributes="Bold"/>
+
+                <Editor x:Name="jsonEditor" 
+                       HeightRequest="150" 
+                       Placeholder="Paste JSON here..."
+                       AutoSize="TextChanges"/>
+
+                <Button Text="Load Form" 
+                       Clicked="OnLoadFormClicked"
+                       HorizontalOptions="Center"
+                       WidthRequest="200"/>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Form Display Area -->
+        <ScrollView Grid.Row="1">
+            <AbsoluteLayout x:Name="formContainer"
+                           HeightRequest="800"
+                           WidthRequest="800"
+                           BackgroundColor="Gray"
+                           Padding="20"/>
+        </ScrollView>
+
+        <!-- Action Buttons -->
+        <Grid Grid.Row="2" 
+              ColumnDefinitions="*,*" 
+              ColumnSpacing="10">
+            <Button Text="Show Values" 
+                   Clicked="OnShowValuesClicked"
+                   Grid.Column="0"/>
+
+            <Button Text="Clear Form" 
+                   Clicked="OnClearFormClicked"
+                   Grid.Column="1"
+                   BackgroundColor="LightGray"/>
+        </Grid>
+
+    </Grid>
+
+
+</ContentPage>

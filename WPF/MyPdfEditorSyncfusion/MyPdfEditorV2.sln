@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyPdfEditorSyncfusion", "MyPdfEditorV2\MyPdfEditorSyncfusion.csproj", "{793067F5-0E13-47F3-94A2-9A353A24B09F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{793067F5-0E13-47F3-94A2-9A353A24B09F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{793067F5-0E13-47F3-94A2-9A353A24B09F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{793067F5-0E13-47F3-94A2-9A353A24B09F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{793067F5-0E13-47F3-94A2-9A353A24B09F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EBEB180E-0D80-4169-9E9C-A6F31B1DDE1C}
+	EndGlobalSection
+EndGlobal
