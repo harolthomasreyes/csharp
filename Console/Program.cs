@@ -2,26 +2,21 @@
 
 
 int[] bridge = { 7, 6, 5, 8 };
-Console.WriteLine(FlimsyBridge.UsageCount(bridge));
+Console.WriteLine(UsageCount(bridge));
 
-public class FlimsyBridge
+static int UsageCount(int[] bridge)
 {
-    public static int UsageCount(int[] bridge)
-    {
-        int[] temp = (int[])bridge.Clone();
+    int[] temp = (int[])bridge.Clone();
 
-        while (true)
+    while (true)
+    {
+        for (int i = 0; i < temp.Length; i++)
         {
-            for (int i = 0; i < temp.Length; i++)
+            temp[i] -= 2;
+            if (temp[i] <= 0)
             {
-                temp[i] -= 2;
-                if (temp[i] <= 0)
-                {
-                    return i + 1;
-                }
+                return i + 1;
             }
         }
     }
 }
-
-
