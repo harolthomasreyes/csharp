@@ -1,12 +1,13 @@
-﻿
+﻿using System;
 
-using System;
+
+int[] bridge = { 7, 6, 5, 8 };
+Console.WriteLine(FlimsyBridge.UsageCount(bridge));
 
 public class FlimsyBridge
 {
     public static int UsageCount(int[] bridge)
     {
-
         int[] temp = (int[])bridge.Clone();
 
         while (true)
@@ -21,10 +22,6 @@ public class FlimsyBridge
             }
         }
     }
-
-    public static void Main(string[] args)
-    {
-        int[] bridge = { 7, 6, 5, 8 };
-        Console.WriteLine(UsageCount(bridge)); // Should print 2
-    }
 }
+
+
