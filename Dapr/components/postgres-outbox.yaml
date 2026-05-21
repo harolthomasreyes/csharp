@@ -1,0 +1,26 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: postgres-outbox
+spec:
+  type: state.postgres
+  version: v1
+  metadata:
+  - name: postgresVersion
+    value: "15"
+  - name: maxLifetime
+    value: "100"
+  - name: maxIdleTime
+    value: "60"
+  - name: maxOpenConnections
+    value: "5"
+  - name: connectionSource
+    value: "environment"
+  - name: weaklyConsistent
+    value: "false"
+  - name: disableGetAll
+    value: "false"
+  - name: disableDeleteAll
+    value: "false"
+  - name: disableListAll
+    value: "false"

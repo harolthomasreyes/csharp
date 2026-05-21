@@ -1,0 +1,154 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_DB: dapr_outbox
+      POSTGRES_USER: dapr
+      POSTGRES_PASSWORD: dapr_secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - dapr-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dapr"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pulsar:
+    image: apachepulsar/pulsar:3.3.0
+    container_name: pulsar
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+    volumes:
+      - pulsar-data:/pulsar/data
+    networks:
+      - dapr-network
+    command: bin/pulsar standalone run
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/admin/v2/standalone/clusters"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  order-service:
+    build:
+      context: ./services/OrderService
+      dockerfile: Dockerfile
+    container_name: order-service
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=dapr_outbox
+      - POSTGRES_USER=dapr
+      - POSTGRES_PASSWORD=dapr_secret
+    ports:
+      - "5000:8080"
+    volumes:
+      - ./components:/components
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pulsar:
+        condition: service_healthy
+    networks:
+      - dapr-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  notification-service:
+    build:
+      context: ./services/NotificationService
+      dockerfile: Dockerfile
+    container_name: notification-service
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=dapr_outbox
+      - POSTGRES_USER=dapr
+      - POSTGRES_PASSWORD=dapr_secret
+    ports:
+      - "5001:8080"
+    volumes:
+      - ./components:/components
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pulsar:
+        condition: service_healthy
+    networks:
+      - dapr-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  dapr-order:
+    image:daprio/dapr:1.14
+    container_name: dapr-order
+    environment:
+      - DAPR_HTTP_PORT=5002
+      - DAPR_METRICS_PORT=5003
+    volumes:
+      - ./components:/components
+    depends_on:
+      order-service:
+        condition: service_healthy
+    networks:
+      - dapr-network
+    command: >
+      dapr
+      --app-id order-service
+      --app-port 8080
+      --config /components/dapr-config.yaml
+      --components-path /components
+      dotnet OrderService.dll
+
+  dapr-notification:
+    image: daprio/dapr:1.14
+    container_name: dapr-notification
+    environment:
+      - DAPR_HTTP_PORT=5004
+      - DAPR_METRICS_PORT=5005
+    volumes:
+      - ./components:/components
+    depends_on:
+      notification-service:
+        condition: service_healthy
+    networks:
+      - dapr-network
+    command: >
+      dapr
+      --app-id notification-service
+      --app-port 8080
+      --config /components/dapr-config.yaml
+      --components-path /components
+      dotnet NotificationService.dll
+
+  dapr-dashboard:
+    image: daprio/dapr-dashboard:latest
+    container_name: dapr-dashboard
+    ports:
+      - "8081:8081"
+    depends_on:
+      - dapr-order
+      - dapr-notification
+    networks:
+      - dapr-network
+
+volumes:
+  postgres-data:
+  pulsar-data:
+
+networks:
+  dapr-network:
+    driver: bridge

@@ -1,0 +1,12 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pubsub
+spec:
+  type: pubsub.pulsar
+  version: v1
+  metadata:
+  - name: brokers
+    value: "pulsar:6650"
+  - name: authType
+    value: "none"
