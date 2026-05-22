@@ -76,10 +76,11 @@ Dapr/
 cd Dapr
 ```
 
-### 2. Iniciar todos los servicios
+### 2. Construir y levantar todos los servicios
 
 ```bash
-docker compose -f dapr-compose.yml up -d
+# Construir imagenes y levantar todos los contenedores
+docker compose -f dapr-compose.yml up --build -d
 ```
 
 ### 3. Verificar que todo esta corriendo
@@ -101,6 +102,33 @@ docker compose -f dapr-compose.yml logs -f order-service
 
 # Solo notification-service
 docker compose -f dapr-compose.yml logs -f notification-service
+```
+
+### 5. Probar el flujo completo
+
+```bash
+# Crear una orden (trigger del outbox)
+curl -X POST http://localhost:5000/api/orders \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerName": "Juan Perez",
+    "totalAmount": 150.00
+  }'
+
+# Verificar la orden en PostgreSQL
+docker exec -it postgres psql -U dapr -d dapr_outbox -c "SELECT * FROM orders;"
+
+# Verificar el evento en la tabla outbox
+docker exec -it postgres psql -U dapr -d dapr_outbox -c "SELECT * FROM dapr_outbox;"
+
+# Verificar que el evento fue procesado
+docker compose -f dapr-compose.yml logs notification-service
+```
+
+Deberias ver el log:
+
+```
+Processing notification: Order <id> created by Juan Perez - Total: $150.00
 ```
 
 ## Flujo del Outbox Pattern
@@ -229,7 +257,7 @@ cd services/OrderService
 export POSTGRES_HOST=localhost
 export POSTGRES_PORT=5432
 export POSTGRES_DB=dapr_outbox
-export POSTGRES_USER=dapr
+export POSTGRES_USERNAME=dapr
 export POSTGRES_PASSWORD=dapr_secret
 dapr run --app-id order-service --app-port 8080 -- dotnet run
 
@@ -238,7 +266,7 @@ cd services/NotificationService
 export POSTGRES_HOST=localhost
 export POSTGRES_PORT=5432
 export POSTGRES_DB=dapr_outbox
-export POSTGRES_USER=dapr
+export POSTGRES_USERNAME=dapr
 export POSTGRES_PASSWORD=dapr_secret
 dapr run --app-id notification-service --app-port 8080 -- dotnet run
 ```
@@ -261,7 +289,7 @@ curl -X POST http://localhost:5000/api/orders \
 | `POSTGRES_HOST` | `postgres` | Host de PostgreSQL |
 | `POSTGRES_PORT` | `5432` | Puerto de PostgreSQL |
 | `POSTGRES_DB` | `dapr_outbox` | Nombre de la base de datos |
-| `POSTGRES_USER` | `dapr` | Usuario de PostgreSQL |
+| `POSTGRES_USERNAME` | `dapr` | Usuario de PostgreSQL |
 | `POSTGRES_PASSWORD` | `dapr_secret` | Password de PostgreSQL |
 | `PULSAR_BROKER` | `pulsar:6650` | Broker de Pulsar |
 

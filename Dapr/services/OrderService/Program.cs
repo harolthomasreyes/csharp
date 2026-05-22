@@ -21,8 +21,6 @@ builder.Services.AddDaprClient();
 
 var app = builder.Build();
 
-app.MapDaprPublisher("pubsub", "order-events", "order-sub-group");
-
 app.MapControllers();
 
 app.Run();

@@ -1,5 +1,5 @@
 using Dapr;
-using Dapr.Client;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Models;
 using OrderService.Services;
@@ -12,12 +12,10 @@ namespace OrderService.Controllers;
 public class OrdersController : ControllerBase
 {
     private readonly OrderDbContext _dbContext;
-    private readonly DaprClient _daprClient;
 
-    public OrdersController(OrderDbContext dbContext, DaprClient daprClient)
+    public OrdersController(OrderDbContext dbContext)
     {
         _dbContext = dbContext;
-        _daprClient = daprClient;
     }
 
     [HttpPost]
@@ -38,25 +36,11 @@ public class OrdersController : ControllerBase
             _dbContext.Orders.Add(order);
             await _dbContext.SaveChangesAsync();
 
-            var orderEvent = new
-            {
-                EventType = "OrderCreated",
-                Source = "orderservice",
-                DataTime = DateTime.UtcNow,
-                OrderId = order.Id,
-                CustomerName = order.CustomerName,
-                TotalAmount = order.TotalAmount
-            };
-
-            await _daprClient.SaveStateAsync("postgres-outbox", "orders", orderEvent, new StateOptions());
-
-            await _daprClient.PublishEventAsync("pubsub", "order-events", orderEvent);
-
             await transaction.CommitAsync();
 
             return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             await transaction.RollbackAsync();
             throw;

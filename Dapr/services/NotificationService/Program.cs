@@ -11,8 +11,6 @@ builder.Services.AddDaprClient();
 
 var app = builder.Build();
 
-app.MapDaprSubscriber();
-
 app.MapControllers();
 
 app.Run();

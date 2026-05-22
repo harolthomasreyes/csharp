@@ -10,3 +10,9 @@ spec:
     value: "pulsar:6650"
   - name: authType
     value: "none"
+  - name: consumerID
+    value: "dapr-app"
+  - name: namespace
+    value: "public/default"
+  - name: tenant
+    value: "public"

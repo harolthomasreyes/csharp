@@ -1,7 +1,7 @@
 apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
-  name: postgres-outbox
+  name: postgres-state
 spec:
   type: state.postgres
   version: v1
