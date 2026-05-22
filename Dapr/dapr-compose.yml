@@ -29,12 +29,7 @@ services:
       - pulsar-data:/pulsar/data
     networks:
       - dapr-network
-    command: bin/pulsar standalone run
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/admin/v2/standalone/clusters"]
-      interval: 15s
-      timeout: 10s
-      retries: 10
+    command: bin/pulsar standalone -nfw -nss
 
   order-service:
     build:
@@ -49,31 +44,21 @@ services:
       - POSTGRES_PASSWORD=dapr_secret
       - DAPR_LOG_LEVEL=debug
     ports:
-      - "5000:8080"
-      - "5002:50002"
+      - "5000:5000"
+      - "5002:5002"
     volumes:
       - ./components:/components
     depends_on:
       postgres:
         condition: service_healthy
-      pulsar:
-        condition: service_healthy
     networks:
       - dapr-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "timeout", "2", "bash", "-c", "echo >/dev/tcp/localhost/5000"]
       interval: 10s
       timeout: 5s
-      retries: 5
-    command: >
-      daprd
-      --app-id order-service
-      --app-port 8080
-      --dapr-http-port 50002
-      --metrics-port 9090
-      --components-path /components
-      --config /components/dapr-config.yaml
-      -- dotnet OrderService.dll
+      retries: 3
+    command: dotnet OrderService.dll
 
   notification-service:
     build:
@@ -88,34 +73,24 @@ services:
       - POSTGRES_PASSWORD=dapr_secret
       - DAPR_LOG_LEVEL=debug
     ports:
-      - "5001:8080"
-      - "5003:50002"
+      - "5001:5001"
+      - "5003:5003"
     volumes:
       - ./components:/components
     depends_on:
       postgres:
         condition: service_healthy
-      pulsar:
-        condition: service_healthy
     networks:
       - dapr-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "timeout", "2", "bash", "-c", "echo >/dev/tcp/localhost/5001"]
       interval: 10s
       timeout: 5s
-      retries: 5
-    command: >
-      daprd
-      --app-id notification-service
-      --app-port 8080
-      --dapr-http-port 50003
-      --metrics-port 9091
-      --components-path /components
-      --config /components/dapr-config.yaml
-      -- dotnet NotificationService.dll
+      retries: 3
+    command: dotnet NotificationService.dll
 
   dapr-dashboard:
-    image: daprio/dapr-dashboard:latest
+    image: daprio/dashboard:latest
     container_name: dapr-dashboard
     ports:
       - "8081:8081"
