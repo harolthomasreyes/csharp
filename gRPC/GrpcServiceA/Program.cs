@@ -1,14 +1,36 @@
 using GrpcServiceA.Services;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddGrpc();
+builder.Services.AddSingleton<DataGeneratorClient>();
+builder.Services.AddSingleton<RecordService>();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new() { Title = "gRPC Data Generator API", Version = "v1" });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-app.MapGrpcService<GreeterService>();
-app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "gRPC Data Generator API v1");
+        c.RoutePrefix = "swagger";
+    });
+}
+
+app.MapGet("/", () => "Swagger UI: /swagger | API Endpoint: POST /api/records?count=10&serviceUrl=http://localhost:5001");
+
+app.MapPost("/api/records", async (int count, RecordService recordService, IConfiguration config) =>
+{
+    var serviceUrl = config["Endpoints:GrpcServiceB:Url"] ?? "http://localhost:5001";
+    return await recordService.GetRecordsAsync(count, serviceUrl);
+});
 
 app.Run();
