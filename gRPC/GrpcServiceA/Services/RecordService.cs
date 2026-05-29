@@ -18,12 +18,12 @@ public class RecordService
         try
         {
             var records = await _client.ReceiveRecordsAsync(serviceUrl, count);
-            _logger.LogInformation("Endpoint completado: {Count} registros recibidos", records.Count);
-            return Results.Ok(records);
+            //_logger.LogInformation("Endpoint completado: {Count} registros recibidos", records.Count);
+            return Results.Ok(records.Count);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error al recibir registros");
+            //_logger.LogError(ex, "Error al recibir registros");
             return Results.Problem(ex.Message);
         }
     }

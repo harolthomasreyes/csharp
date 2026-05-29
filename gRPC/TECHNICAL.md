@@ -106,7 +106,7 @@ public class GeneratorService : DataGeneratorService.DataGeneratorServiceBase
 
     public override async Task GenerateRecords(GenerateRequest request, IServerStreamWriter<GenerateResponse> responseStream, ServerCallContext context)
     {
-        _logger.LogInformation("Solicitud recibida: generar {Count} registros", request.Count);
+        //_logger.LogInformation("Solicitud recibida: generar {Count} registros", request.Count);
 
         for (int i = 0; i < request.Count; i++)
         {
@@ -133,12 +133,12 @@ public class GeneratorService : DataGeneratorService.DataGeneratorServiceBase
 
             await responseStream.WriteAsync(response);
 
-            _logger.LogInformation("Enviado registro {Id}: {Name} = {Value}", response.Id, response.Name, response.Value);
+            ////_logger.LogInformation("Enviado registro {Id}: {Name} = {Value}", response.Id, response.Name, response.Value);
 
-            await Task.Delay(100, context.CancellationToken);
+            
         }
 
-        _logger.LogInformation("Completado: se enviaron {Count} registros", request.Count);
+        //_logger.LogInformation("Completado: se enviaron {Count} registros", request.Count);
     }
 }
 ```
@@ -252,23 +252,23 @@ public class DataGeneratorClient
 
         var call = client.GenerateRecords(new GenerateRequest { Count = count });
 
-        _logger.LogInformation("Conectado a {ServiceUrl}. Esperando {Count} registros...", serviceUrl, count);
+        //_logger.LogInformation("Conectado a {ServiceUrl}. Esperando {Count} registros...", serviceUrl, count);
 
         var results = new List<GenerateResponse>();
 
         await foreach (var response in call.ResponseStream.ReadAllAsync())
         {
             results.Add(response);
-            _logger.LogInformation("[{Received}/{Total}] Id={Id}, Name={Name}, Value={Value}, Timestamp={Timestamp}",
+            //_logger.LogInformation("[{Received}/{Total}] Id={Id}, Name={Name}, Value={Value}, Timestamp={Timestamp}",
                 results.Count, count, response.Id, response.Name, response.Value, response.Timestamp);
 
             if (!string.IsNullOrEmpty(response.JsonData))
             {
-                _logger.LogDebug("JSON recibido: {JsonData}", response.JsonData);
+                //_logger.LogDebug("JSON recibido: {JsonData}", response.JsonData);
             }
         }
 
-        _logger.LogInformation("Completado: se recibieron {Received} registros de {Total}", results.Count, count);
+        //_logger.LogInformation("Completado: se recibieron {Received} registros de {Total}", results.Count, count);
 
         return results;
     }
@@ -298,12 +298,12 @@ public class RecordService
         try
         {
             var records = await _client.ReceiveRecordsAsync(serviceUrl, count);
-            _logger.LogInformation("Endpoint completado: {Count} registros recibidos", records.Count);
+            //_logger.LogInformation("Endpoint completado: {Count} registros recibidos", records.Count);
             return Results.Ok(records);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error al recibir registros");
+            //_logger.LogError(ex, "Error al recibir registros");
             return Results.Problem(ex.Message);
         }
     }

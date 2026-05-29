@@ -20,7 +20,7 @@ public class GeneratorService : DataGeneratorService.DataGeneratorServiceBase
 
     public override async Task GenerateRecords(GenerateRequest request, IServerStreamWriter<GenerateResponse> responseStream, ServerCallContext context)
     {
-        _logger.LogInformation("Solicitud recibida: generar {Count} registros", request.Count);
+        //_logger.LogInformation("Solicitud recibida: generar {Count} registros", request.Count);
 
         for (int i = 0; i < request.Count; i++)
         {
@@ -47,9 +47,9 @@ public class GeneratorService : DataGeneratorService.DataGeneratorServiceBase
 
             await responseStream.WriteAsync(response);
 
-            _logger.LogInformation("Enviado registro {Id}: {Name} = {Value}", response.Id, response.Name, response.Value);
+            //_logger.LogInformation("Enviado registro {Id}: {Name} = {Value}", response.Id, response.Name, response.Value);
 
-            await Task.Delay(100, context.CancellationToken);
+            
         }
 
         _logger.LogInformation("Completado: se enviaron {Count} registros", request.Count);

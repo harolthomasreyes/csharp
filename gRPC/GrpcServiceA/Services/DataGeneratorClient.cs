@@ -21,19 +21,18 @@ public class DataGeneratorClient
 
         var call = client.GenerateRecords(new GenerateRequest { Count = count });
 
-        _logger.LogInformation("Conectado a {ServiceUrl}. Esperando {Count} registros...", serviceUrl, count);
+        //_logger.LogInformation("Conectado a {ServiceUrl}. Esperando {Count} registros...", serviceUrl, count);
 
         var results = new List<GenerateResponse>();
 
         await foreach (var response in call.ResponseStream.ReadAllAsync())
         {
             results.Add(response);
-            _logger.LogInformation("[{Received}/{Total}] Id={Id}, Name={Name}, Value={Value}, Timestamp={Timestamp}",
-                results.Count, count, response.Id, response.Name, response.Value, response.Timestamp);
+            //_logger.LogInformation("[{Received}/{Total}] Id={Id}, Name={Name}, Value={Value}, Timestamp={Timestamp}",results.Count, count, response.Id, response.Name, response.Value, response.Timestamp);
 
             if (!string.IsNullOrEmpty(response.JsonData))
             {
-                _logger.LogDebug("JSON recibido: {JsonData}", response.JsonData);
+                //_logger.LogDebug("JSON recibido: {JsonData}", response.JsonData);
             }
         }
 
